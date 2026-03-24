@@ -9,6 +9,7 @@ import { Gallery } from '@/components/Gallery';
 import { Parents } from '@/components/Parents';
 import { Details } from '@/components/Details';
 import { RSVP } from '@/components/RSVP';
+import { HomepageWishes } from '@/components/HomepageWishes';
 import { Treats } from '@/components/Treats';
 import { Footer } from '@/components/Footer';
 import { WishingPopup } from '@/components/WishingPopup';
@@ -111,6 +112,12 @@ export default function Home() {
       <Wave bgColor="#8c001a" svgColor="#1a0008" />
 
       <Treats treats={config.treats} />
+
+      <Wave bgColor="#fffaf5" svgColor="#fff0f4" />
+
+      <HomepageWishes childName={config.child.name} />
+
+      <Wave bgColor="#fff0f4" svgColor="#fffaf5" />
 
       <Footer
         childName={config.child.name}

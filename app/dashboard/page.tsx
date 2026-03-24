@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { getRSVPs, getWishes } from '@/lib/supabase';
+import { getRSVPs, getWishes, updateWishVisibility } from '@/lib/supabase';
 import styles from '@/styles/Dashboard.module.css';
 
 interface RSVP {
@@ -17,11 +17,12 @@ interface RSVP {
 }
 
 interface Wish {
-  id: string;
+  id: number;
   child_name: string;
   guest_name: string;
   wish_text: string;
   submitted_at: string;
+  is_visible: boolean;
 }
 
 export default function DashboardPage() {
@@ -29,6 +30,7 @@ export default function DashboardPage() {
   const [user, setUser] = useState<any>(null);
   const [rsvps, setRsvps] = useState<RSVP[]>([]);
   const [wishes, setWishes] = useState<Wish[]>([]);
+  const [selectedWishes, setSelectedWishes] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'rsvps' | 'wishes'>('rsvps');
 
@@ -54,7 +56,9 @@ export default function DashboardPage() {
         const wishResult = await getWishes('Emma');
 
         setRsvps(rsvpResult?.data || []);
-        setWishes(wishResult?.data || []);
+        const wishesData = wishResult?.data || [];
+        setWishes(wishesData);
+        setSelectedWishes(wishesData.filter(w => w.is_visible).map(w => w.id));
         setLoading(false);
       } catch (err) {
         console.error('Session error:', err);
@@ -69,6 +73,36 @@ export default function DashboardPage() {
   const handleLogout = async () => {
     localStorage.removeItem('adminSession');
     router.push('/auth');
+  };
+
+  const handleToggleWishVisibility = async (wishId: number, isVisible: boolean) => {
+    await updateWishVisibility(wishId, !isVisible);
+    // Update local state
+    setWishes(wishes.map(w => 
+      w.id === wishId ? { ...w, is_visible: !isVisible } : w
+    ));
+  };
+
+  const handleBulkVisibilityUpdate = async () => {
+    // Set all wishes to hidden first
+    for (const wish of wishes) {
+      if (wish.is_visible) {
+        await updateWishVisibility(wish.id, false);
+      }
+    }
+    
+    // Set selected wishes to visible
+    for (const wishId of selectedWishes) {
+      await updateWishVisibility(wishId, true);
+    }
+    
+    // Update local state
+    setWishes(wishes.map(w => ({
+      ...w,
+      is_visible: selectedWishes.includes(w.id)
+    })));
+    
+    alert('Homepage wishes updated successfully!');
   };
 
   if (loading) {
@@ -197,6 +231,20 @@ export default function DashboardPage() {
 
         {activeTab === 'wishes' && (
           <div className={styles.wishesSection}>
+            <div className={styles.wishesControls}>
+              <h3>🎈 Select Wishes to Show on Homepage</h3>
+              <p className={styles.wishesDescription}>
+                Choose which birthday wishes should appear on the homepage. Selected wishes will be visible to all visitors.
+              </p>
+              <button
+                className={styles.updateBtn}
+                onClick={handleBulkVisibilityUpdate}
+                disabled={selectedWishes.length === 0 && wishes.filter(w => w.is_visible).length === 0}
+              >
+                ✨ Update Homepage Wishes ({selectedWishes.length} selected)
+              </button>
+            </div>
+
             {wishes.length === 0 ? (
               <div className={styles.emptyState}>
                 <p className={styles.emptyIcon}>🎁</p>
@@ -205,7 +253,24 @@ export default function DashboardPage() {
             ) : (
               <div className={styles.wishesList}>
                 {wishes.map((wish) => (
-                  <div key={wish.id} className={styles.wishCard}>
+                  <div key={wish.id} className={`${styles.wishCard} ${selectedWishes.includes(wish.id) ? styles.wishSelected : ''}`}>
+                    <div className={styles.wishSelect}>
+                      <input
+                        type="checkbox"
+                        id={`wish-${wish.id}`}
+                        checked={selectedWishes.includes(wish.id)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSelectedWishes([...selectedWishes, wish.id]);
+                          } else {
+                            setSelectedWishes(selectedWishes.filter(id => id !== wish.id));
+                          }
+                        }}
+                      />
+                      <label htmlFor={`wish-${wish.id}`} className={styles.wishCheckbox}>
+                        {selectedWishes.includes(wish.id) ? '✅ Selected' : '⬜ Select'}
+                      </label>
+                    </div>
                     <div className={styles.wishHeader}>
                       <h4>{wish.guest_name}</h4>
                       <span className={styles.wishDate}>

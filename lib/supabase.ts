@@ -228,7 +228,7 @@ export const getWishes = async (childName: string) => {
       .from('wishes')
       .select('*')
       .eq('child_name', childName)
-      .order('created_at', { ascending: false });
+      .order('submitted_at', { ascending: false });
 
     if (error) {
       const errorMsg = error?.message || JSON.stringify(error) || 'Unknown error';
@@ -252,7 +252,7 @@ export const getVisibleWishes = async (childName: string) => {
       .select('*')
       .eq('child_name', childName)
       .eq('is_visible', true)
-      .order('created_at', { ascending: false });
+      .order('submitted_at', { ascending: false });
 
     if (error) {
       const errorMsg = error?.message || JSON.stringify(error) || 'Unknown error';

@@ -304,19 +304,143 @@
   font-style: italic;
 }
 
-/* Empty State */
-.emptyState {
-  text-align: center;
-  padding: 60px 20px;
-  background: linear-gradient(135deg, rgba(255, 214, 224, 0.3) 0%, rgba(255, 229, 102, 0.2) 100%);
-  border-radius: 24px;
-  border: 2px dashed var(--light-pink);
+.wishFooter {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid #ffd6e0;
+  display: flex;
+  justify-content: flex-end;
 }
 
-.emptyIcon {
-  font-size: 3rem;
-  margin: 0 0 16px 0;
-  display: block;
+.toggleBtn {
+  padding: 8px 14px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  letter-spacing: 0.05em;
+}
+
+.toggleBtn.visible {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border: 1.5px solid #81c784;
+}
+
+.toggleBtn.visible:hover {
+  background: #c8e6c9;
+}
+
+.toggleBtn.hidden {
+  background: #ffe8e8;
+  color: #c0003a;
+  border: 1.5px solid #ffb3b3;
+}
+
+.toggleBtn.hidden:hover {
+  background: #ffcccc;
+}
+
+.wishCard.wishVisible {
+  border-color: #81c784;
+  background: #f1f8f4;
+}
+
+.wishCard.wishHidden {
+  opacity: 0.7;
+  border-color: #ffb3c1;
+  background: #ffe8ed;
+}
+
+/* Wishes Controls */
+.wishesControls {
+  background: linear-gradient(135deg, #fff8f2 0%, #fff0f4 100%);
+  border: 2px solid var(--light-pink);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.wishesControls h3 {
+  margin: 0 0 8px 0;
+  font-family: 'Fredoka One', cursive;
+  font-size: 1.5rem;
+  color: var(--dark-red);
+}
+
+.wishesDescription {
+  margin: 0 0 20px 0;
+  color: #666;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.updateBtn {
+  background: linear-gradient(135deg, var(--red) 0%, var(--crimson) 100%);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(232, 36, 60, 0.3);
+}
+
+.updateBtn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(232, 36, 60, 0.4);
+}
+
+.updateBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Wish Select */
+.wishSelect {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 12px;
+  background: rgba(255, 214, 224, 0.3);
+  border-radius: 8px;
+}
+
+.wishSelect input[type="checkbox"] {
+  display: none;
+}
+
+.wishCheckbox {
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
+}
+
+.wishCheckbox:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.wishCard.wishSelected {
+  border-color: #81c784;
+  background: linear-gradient(135deg, #f1f8f4 0%, #e8f5e9 100%);
+  transform: scale(1.02);
+}
+
+.wishCard.wishSelected .wishCheckbox {
+  background: #81c784;
+  color: white;
+  border-color: #4caf50;
 }
 
 .emptyText {
