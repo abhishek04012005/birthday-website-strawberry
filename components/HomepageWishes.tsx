@@ -30,16 +30,19 @@ export const HomepageWishes: React.FC<HomepageWishesProps> = ({ childName }) => 
     fetchWishes();
   }, [childName]);
 
-  // Auto-scroll carousel
+  // Auto-scroll carousel with infinite loop
   useEffect(() => {
-    if (wishes.length <= 3) return; // Don't auto-scroll if 3 or fewer wishes
+    if (wishes.length === 0) return;
 
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % wishes.length);
-    }, 4000); // Change slide every 4 seconds
+    }, 6000); // Change slide every 6 seconds
 
     return () => clearInterval(interval);
   }, [wishes.length]);
+
+  // Handle smooth wrapping by duplicating wishes
+  const displayWishes = wishes.length > 0 ? [...wishes, ...wishes] : [];
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % wishes.length);
@@ -88,27 +91,53 @@ export const HomepageWishes: React.FC<HomepageWishesProps> = ({ childName }) => 
             <p className={styles.emptyText}>Wishes will appear here soon! ✨</p>
           </div>
         ) : (
-          <div className={styles.wishesGrid}>
-            {wishes.map((wish, index) => (
-              <div key={wish.id} className={styles.wishCard}>
-                <div className={styles.wishQuote}>
-                  <p className={styles.wishText}>"{wish.wish_text}"</p>
-                </div>
-                <div className={styles.wishFooter}>
-                  <p className={styles.wishFrom}>
-                    — <strong>{wish.guest_name}</strong>
-                  </p>
-                  <p className={styles.wishDate}>
-                    {new Date(wish.submitted_at).toLocaleDateString()}
-                  </p>
-                </div>
-                <div className={styles.wishDecor}>
-                  {index % 3 === 0 && '💖'}
-                  {index % 3 === 1 && '🌹'}
-                  {index % 3 === 2 && '🎀'}
-                </div>
+          <div className={styles.carouselContainer}>
+            <button 
+              className={`${styles.navBtn} ${styles.prevBtn}`}
+              onClick={prevSlide}
+              aria-label="Previous wishes"
+            >
+              ←
+            </button>
+
+            <div className={styles.carousel}>
+              <div 
+                className={styles.carouselTrack} 
+                style={{ 
+                  transform: `translateX(calc(-${currentSlide} * (calc(100% / 3) + 24px)))`,
+                  transition: 'transform 0.8s linear'
+                }}
+              >
+                {displayWishes.map((wish, index) => (
+                  <div key={`${wish.id}-${index}`} className={styles.carouselSlide}>
+                    <div className={styles.wishCard}>
+                      <div className={styles.wishQuoteDecor}>💌</div>
+                      <div className={styles.wishQuote}>
+                        <p className={styles.wishText}>"{wish.wish_text}"</p>
+                      </div>
+                      <div className={styles.wishFooter}>
+                        <p className={styles.wishFrom}>
+                          <strong>{wish.guest_name}</strong>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
+
+            <button 
+              className={`${styles.navBtn} ${styles.nextBtn}`}
+              onClick={nextSlide}
+              aria-label="Next wishes"
+            >
+              →
+            </button>
+
+            {/* Slide Counter */}
+            <div className={styles.slideCounter}>
+              Slide {(currentSlide % wishes.length) + 1} of {wishes.length}
+            </div>
           </div>
         )}
       </div>

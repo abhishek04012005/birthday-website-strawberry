@@ -130,14 +130,14 @@ export const WishingPopup: React.FC<WishingPopupProps> = ({ childName, onClose, 
           )}
 
           <div className={styles.wishesContainer}>
-            <h3 className={styles.wishesTitle}>✨ Wishes from Friends (Latest First)</h3>
+            <h3 className={styles.wishesTitle}>✨ Latest Wishes (Top 2)</h3>
             {fetchingWishes ? (
               <p className={styles.loadingText}>Loading wishes...</p>
             ) : wishes.length === 0 ? (
               <p className={styles.emptyText}>Be the first to send a wish! 🍓</p>
             ) : (
               <div className={styles.wishesList}>
-                {wishes.map((w: any, idx) => (
+                {wishes.slice(0, 2).map((w: any, idx) => (
                   <div key={idx} className={styles.wishItem}>
                     <div className={styles.wishHeader}>
                       <span className={styles.guestName}>{w.guest_name || w.guestName}</span>

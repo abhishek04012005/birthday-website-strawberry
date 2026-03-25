@@ -29,6 +29,7 @@ export default function WishesPage() {
   const [wishText, setWishText] = useState('');
   const [message, setMessage] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [modalMessage, setModalMessage] = useState<{text: string, type: 'success' | 'error'} | null>(null);
 
   useEffect(() => {
     const load = async () => {
@@ -57,7 +58,8 @@ export default function WishesPage() {
     e.preventDefault();
 
     if (!guestName.trim() || !guestPhone.trim() || !wishText.trim()) {
-      setMessage('Please enter name, phone number and wish message.');
+      setModalMessage({ text: 'Please enter name, phone number and wish message.', type: 'error' });
+      setTimeout(() => setModalMessage(null), 3000);
       return;
     }
 
@@ -71,13 +73,15 @@ export default function WishesPage() {
     });
 
     if (result.success) {
-      setMessage('Wish submitted successfully! It will appear on home if approved.');
+      setModalMessage({ text: 'Wish submitted successfully! It will appear on home if approved.', type: 'success' });
       setGuestName('');
       setGuestPhone('');
       setWishText('');
       await refreshWishes(user);
+      setTimeout(() => setModalMessage(null), 3000);
     } else {
-      setMessage(`Submission failed: ${result.error || 'Unknown error'}`);
+      setModalMessage({ text: `Submission failed: ${result.error || 'Unknown error'}`, type: 'error' });
+      setTimeout(() => setModalMessage(null), 3000);
     }
 
     setSubmitting(false);
@@ -86,10 +90,12 @@ export default function WishesPage() {
   const toggleVisibility = async (wishId: number, currentVisibility: boolean) => {
     const res = await updateWishVisibility(wishId, !currentVisibility);
     if (res.success) {
-      setMessage('Visibility toggled.');
+      setModalMessage({ text: 'Visibility updated successfully!', type: 'success' });
       await refreshWishes(user);
+      setTimeout(() => setModalMessage(null), 3000);
     } else {
-      setMessage(`Failed to update visibility: ${res.error || 'Unknown error'}`);
+      setModalMessage({ text: `Failed to update visibility: ${res.error || 'Unknown error'}`, type: 'error' });
+      setTimeout(() => setModalMessage(null), 3000);
     }
   };
 
@@ -168,6 +174,17 @@ export default function WishesPage() {
 
         <Wave bgColor="#fff0f4" svgColor="#fffaf5" />
       </div>
+
+      {modalMessage && (
+        <div className={styles.modalOverlay} onClick={() => setModalMessage(null)}>
+          <div className={`${styles.modal} ${styles[modalMessage.type]}`} onClick={(e) => e.stopPropagation()}>
+            <button className={styles.modalClose} onClick={() => setModalMessage(null)}>✕</button>
+            <div className={styles.modalContent}>
+              <p className={styles.modalText}>{modalMessage.text}</p>
+            </div>
+          </div>
+        </div>
+      )}
 
       <Footer childName={config.child.name} date={config.party.date} venue={config.party.venue} />
     </main>

@@ -33,6 +33,7 @@ export default function DashboardPage() {
   const [selectedWishes, setSelectedWishes] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'rsvps' | 'wishes'>('rsvps');
+  const [modalMessage, setModalMessage] = useState<{text: string, type: 'success' | 'error'} | null>(null);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -102,7 +103,8 @@ export default function DashboardPage() {
       is_visible: selectedWishes.includes(w.id)
     })));
     
-    alert('Homepage wishes updated successfully!');
+    setModalMessage({ text: 'Homepage wishes updated successfully!', type: 'success' });
+    setTimeout(() => setModalMessage(null), 3000);
   };
 
   if (loading) {
@@ -305,6 +307,21 @@ export default function DashboardPage() {
           📝
         </a>
       </div>
+
+      {/* Modal Popup */}
+      {modalMessage && (
+        <div className={styles.modalOverlay} onClick={() => setModalMessage(null)}>
+          <div className={`${styles.modal} ${styles[modalMessage.type]}`} onClick={(e) => e.stopPropagation()}>
+            <button className={styles.modalClose} onClick={() => setModalMessage(null)}>✕</button>
+            <div className={styles.modalContent}>
+              <div className={styles.modalIcon}>
+                {modalMessage.type === 'success' ? '✨' : '⚠️'}
+              </div>
+              <p className={styles.modalText}>{modalMessage.text}</p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
