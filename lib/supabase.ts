@@ -310,3 +310,248 @@ export const getRSVPs = async (childName: string) => {
     return { success: false, error: 'Failed to fetch RSVPs', data: [] };
   }
 };
+
+// Guest Management Types
+export interface GuestData {
+  title: string;
+  name: string;
+  phone?: string;
+  childName: string;
+}
+
+interface LocalGuestRecord {
+  id: number;
+  title: string;
+  name: string;
+  phone: string | null;
+  child_name: string;
+  created_at: string;
+  updated_at: string;
+}
+
+const LOCAL_GUESTS_STORAGE_KEY = 'birthday-local-guests';
+
+const isMissingGuestsTableError = (error: any) => {
+  const message = String(error?.message || '').toLowerCase();
+  return (
+    error?.code === 'PGRST205' ||
+    message.includes("could not find the table 'public.guests'") ||
+    message.includes('relation "guests" does not exist') ||
+    message.includes('relation "public.guests" does not exist') ||
+    message.includes('row-level security policy') ||
+    message.includes('violates row-level security policy')
+  );
+};
+
+const readLocalGuests = (): LocalGuestRecord[] => {
+  if (typeof window === 'undefined') return [];
+
+  try {
+    const raw = window.localStorage.getItem(LOCAL_GUESTS_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch (err) {
+    console.warn('Unable to read local guest cache:', err);
+    return [];
+  }
+};
+
+const writeLocalGuests = (guests: LocalGuestRecord[]) => {
+  if (typeof window === 'undefined') return;
+  window.localStorage.setItem(LOCAL_GUESTS_STORAGE_KEY, JSON.stringify(guests));
+};
+
+const createLocalGuestRecord = (data: GuestData): LocalGuestRecord => {
+  const timestamp = new Date().toISOString();
+
+  return {
+    id: Date.now() + Math.floor(Math.random() * 1000),
+    title: data.title,
+    name: data.name,
+    phone: data.phone || null,
+    child_name: data.childName,
+    created_at: timestamp,
+    updated_at: timestamp,
+  };
+};
+
+// Save guest
+export const saveGuest = async (data: GuestData) => {
+  try {
+    const dbData = {
+      title: data.title,
+      name: data.name,
+      phone: data.phone || null,
+      child_name: data.childName,
+    };
+
+    const { data: result, error } = await supabase
+      .from('guests')
+      .insert([dbData])
+      .select();
+
+    if (error) {
+      if (isMissingGuestsTableError(error)) {
+        const localGuest = createLocalGuestRecord(data);
+        const existingGuests = readLocalGuests();
+        writeLocalGuests([localGuest, ...existingGuests]);
+        console.warn('Supabase guests table is missing. Guest was saved to local browser storage instead.');
+        return { success: true, data: [localGuest], warning: 'Using local guest storage' };
+      }
+
+      const errorMsg = error?.message || JSON.stringify(error) || 'Unknown error';
+      console.error('Error saving guest:', errorMsg);
+      return { success: false, error: errorMsg };
+    }
+
+    return { success: true, data: result };
+  } catch (err) {
+    console.error('Unexpected error saving guest:', err);
+    return { success: false, error: 'Failed to save guest' };
+  }
+};
+
+// Get guests
+export const getGuests = async (childName: string) => {
+  try {
+    const { data, error } = await supabase
+      .from('guests')
+      .select('*')
+      .eq('child_name', childName)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      if (isMissingGuestsTableError(error)) {
+        const localGuests = readLocalGuests()
+          .filter((guest) => guest.child_name === childName)
+          .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
+        console.warn('Supabase guests table is missing. Showing locally stored guests instead.');
+        return { success: true, data: localGuests, warning: 'Using local guest storage' };
+      }
+
+      const errorMsg = error?.message || JSON.stringify(error) || 'Unknown error';
+      console.error('Error fetching guests:', errorMsg);
+      return { success: false, error: errorMsg, data: [] };
+    }
+
+    return { success: true, data: data || [] };
+  } catch (err) {
+    console.error('Unexpected error fetching guests:', err);
+    return { success: false, error: 'Failed to fetch guests', data: [] };
+  }
+};
+
+// Update guest
+export const updateGuest = async (id: number, data: Partial<GuestData>) => {
+  try {
+    const dbData: any = {
+      updated_at: new Date().toISOString(),
+    };
+
+    if (data.title !== undefined) dbData.title = data.title;
+    if (data.name !== undefined) dbData.name = data.name;
+    if (data.phone !== undefined) dbData.phone = data.phone;
+
+    const { data: result, error } = await supabase
+      .from('guests')
+      .update(dbData)
+      .eq('id', id)
+      .select();
+
+    if (error) {
+      if (isMissingGuestsTableError(error)) {
+        const existingGuests = readLocalGuests();
+        let updatedGuest: LocalGuestRecord | null = null;
+
+        const nextGuests = existingGuests.map((guest) => {
+          if (guest.id !== id) return guest;
+
+          updatedGuest = {
+            ...guest,
+            title: data.title ?? guest.title,
+            name: data.name ?? guest.name,
+            phone: data.phone ?? guest.phone,
+            updated_at: new Date().toISOString(),
+          };
+
+          return updatedGuest;
+        });
+
+        writeLocalGuests(nextGuests);
+        return { success: Boolean(updatedGuest), data: updatedGuest ? [updatedGuest] : [] };
+      }
+
+      const errorMsg = error?.message || JSON.stringify(error) || 'Unknown error';
+      console.error('Error updating guest:', errorMsg);
+      return { success: false, error: errorMsg };
+    }
+
+    return { success: true, data: result };
+  } catch (err) {
+    console.error('Unexpected error updating guest:', err);
+    return { success: false, error: 'Failed to update guest' };
+  }
+};
+
+// Delete guest
+export const deleteGuest = async (id: number) => {
+  try {
+    const { error } = await supabase
+      .from('guests')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      if (isMissingGuestsTableError(error)) {
+        const existingGuests = readLocalGuests();
+        writeLocalGuests(existingGuests.filter((guest) => guest.id !== id));
+        return { success: true, warning: 'Using local guest storage' };
+      }
+
+      const errorMsg = error?.message || JSON.stringify(error) || 'Unknown error';
+      console.error('Error deleting guest:', errorMsg);
+      return { success: false, error: errorMsg };
+    }
+
+    return { success: true };
+  } catch (err) {
+    console.error('Unexpected error deleting guest:', err);
+    return { success: false, error: 'Failed to delete guest' };
+  }
+};
+
+// Bulk save guests (for Excel upload)
+export const bulkSaveGuests = async (guests: GuestData[]) => {
+  try {
+    const dbData = guests.map(guest => ({
+      title: guest.title,
+      name: guest.name,
+      phone: guest.phone || null,
+      child_name: guest.childName,
+    }));
+
+    const { data: result, error } = await supabase
+      .from('guests')
+      .insert(dbData)
+      .select();
+
+    if (error) {
+      if (isMissingGuestsTableError(error)) {
+        const existingGuests = readLocalGuests();
+        const localGuests = guests.map((guest) => createLocalGuestRecord(guest));
+        writeLocalGuests([...localGuests, ...existingGuests]);
+        console.warn('Supabase guests table is missing. Uploaded guests were saved locally instead.');
+        return { success: true, data: localGuests, warning: 'Using local guest storage' };
+      }
+
+      const errorMsg = error?.message || JSON.stringify(error) || 'Unknown error';
+      console.error('Error bulk saving guests:', errorMsg);
+      return { success: false, error: errorMsg };
+    }
+
+    return { success: true, data: result };
+  } catch (err) {
+    console.error('Unexpected error bulk saving guests:', err);
+    return { success: false, error: 'Failed to bulk save guests' };
+  }
+};

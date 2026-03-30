@@ -99,6 +99,32 @@ create policy "anyone_can_read_wish" on wishes
   using (true);
 ```
 
+#### Create Guests Table
+```sql
+create table guests (
+  id bigint primary key generated always as identity,
+  title text not null,
+  name text not null,
+  phone text,
+  child_name text not null,
+  created_at timestamp with time zone default now(),
+  updated_at timestamp with time zone default now()
+);
+
+-- Enable Row Level Security
+alter table guests enable row level security;
+
+-- Allow authenticated users to manage guests
+create policy "authenticated_can_manage_guests" on guests
+  for all
+  using (auth.role() = 'authenticated');
+
+-- Allow authenticated users to read guests
+create policy "authenticated_can_read_guests" on guests
+  for select
+  using (auth.role() = 'authenticated');
+```
+
 ### 5. Verify Installation
 
 1. Install Supabase dependency (already in package.json):
@@ -122,6 +148,7 @@ create policy "anyone_can_read_wish" on wishes
 ✅ **RSVP Form** - Saves guest responses to database  
 ✅ **Birthday Wishes** - Guests can send wishes shown in popup  
 ✅ **Real-time Updates** - Wishes update as they're submitted  
+✅ **Guest Management** - Admin can manage guest list and send messages  
 ✅ **Guest List** - Track who's attending via Supabase dashboard  
 
 ## 📊 Accessing Your Data
@@ -135,6 +162,10 @@ create policy "anyone_can_read_wish" on wishes
 ### View Birthday Wishes
 1. Click **wishes** table
 2. See all wishes sorted by newest first
+
+### View Guest List
+1. Click **guests** table
+2. See all managed guests for messaging
 
 ### Export Data
 1. Click the three dots (...) on any table

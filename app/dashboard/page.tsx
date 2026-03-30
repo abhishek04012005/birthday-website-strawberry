@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { getRSVPs, getWishes, updateWishVisibility } from '@/lib/supabase';
 import styles from '@/styles/Dashboard.module.css';
 import { FlyerCard } from '@/components/FlyerCard';
+import AdminNavbar from '@/components/AdminNavbar';
 
 interface RSVP {
   id: string;
@@ -37,6 +38,13 @@ export default function DashboardPage() {
   const [modalMessage, setModalMessage] = useState<{text: string, type: 'success' | 'error'} | null>(null);
 
   useEffect(() => {
+    // Check URL params for initial tab
+    const urlParams = new URLSearchParams(window.location.search);
+    const tabParam = urlParams.get('tab');
+    if (tabParam === 'rsvps' || tabParam === 'wishes' || tabParam === 'flyer') {
+      setActiveTab(tabParam);
+    }
+
     const checkAuth = async () => {
       // Check localStorage for admin session
       const sessionStr = localStorage.getItem('adminSession');
@@ -72,9 +80,12 @@ export default function DashboardPage() {
     checkAuth();
   }, [router]);
 
-  const handleLogout = async () => {
-    localStorage.removeItem('adminSession');
-    router.push('/auth');
+  const handleTabChange = (tab: 'rsvps' | 'wishes' | 'flyer') => {
+    setActiveTab(tab);
+    // Update URL without causing a page reload
+    const url = new URL(window.location.href);
+    url.searchParams.set('tab', tab);
+    window.history.replaceState({}, '', url.toString());
   };
 
   const handleToggleWishVisibility = async (wishId: number, isVisible: boolean) => {
@@ -127,8 +138,10 @@ export default function DashboardPage() {
   const totalGuests = rsvps.reduce((sum, r) => sum + r.guest_count, 0);
 
   return (
-    <div className={styles.dashboardContainer}>
-      <div className={styles.dashboardBg}></div>
+    <>
+      <AdminNavbar />
+      <div className={styles.dashboardContainer}>
+        <div className={styles.dashboardBg}></div>
 
       {/* Header */}
       <header className={styles.dashboardHeader}>
@@ -139,9 +152,6 @@ export default function DashboardPage() {
               Welcome back, {user.childName}!
             </p>
           </div>
-          <button className={styles.logoutBtn} onClick={handleLogout}>
-            Logout
-          </button>
         </div>
       </header>
 
@@ -169,19 +179,19 @@ export default function DashboardPage() {
       <div className={styles.tabContainer}>
         <button
           className={`${styles.tabBtn} ${activeTab === 'rsvps' ? styles.active : ''}`}
-          onClick={() => setActiveTab('rsvps')}
+          onClick={() => handleTabChange('rsvps')}
         >
           👥 RSVPs ({rsvps.length})
         </button>
         <button
           className={`${styles.tabBtn} ${activeTab === 'wishes' ? styles.active : ''}`}
-          onClick={() => setActiveTab('wishes')}
+          onClick={() => handleTabChange('wishes')}
         >
           🎈 Wishes ({wishes.length})
         </button>
         <button
           className={`${styles.tabBtn} ${activeTab === 'flyer' ? styles.active : ''}`}
-          onClick={() => setActiveTab('flyer')}
+          onClick={() => handleTabChange('flyer')}
         >
           🎟 Flyer
         </button>
@@ -319,26 +329,6 @@ export default function DashboardPage() {
         )}
       </main>
 
-      {/* Bottom Action Buttons */}
-      <div className={styles.bottomActionBar}>
-        <a
-          href="https://wa.me/919285248504?text=Hi%20Emma%2C%20I%20just%20RSVP%20for%20your%20birthday!"
-          target="_blank"
-          rel="noreferrer"
-          className={styles.actionBtn}
-          title="WhatsApp"
-        >
-          💬
-        </a>
-        <a
-          href="/#rsvp"
-          className={styles.actionBtnSecondary}
-          title="RSVP"
-        >
-          📝
-        </a>
-      </div>
-
       {/* Modal Popup */}
       {modalMessage && (
         <div className={styles.modalOverlay} onClick={() => setModalMessage(null)}>
@@ -353,6 +343,7 @@ export default function DashboardPage() {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </>
   );
 }

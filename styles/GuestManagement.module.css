@@ -1,0 +1,602 @@
+/* Guest Management Styles */
+.container {
+  min-height: 100vh;
+  background: var(--cream);
+  position: relative;
+  overflow-x: hidden;
+}
+
+.bg {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse at 20% 30%, #ffd6e080 0%, transparent 50%),
+              radial-gradient(ellipse at 80% 70%, #ffe56650 0%, transparent 45%),
+              linear-gradient(180deg, #fff8f2 0%, #fff0f4 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Header */
+.header {
+  background: linear-gradient(135deg, var(--red) 0%, var(--crimson) 100%);
+  padding: 28px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  box-shadow: 0 4px 20px rgba(232, 36, 60, 0.2);
+}
+
+.headerContent {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.headerTitle {
+  font-family: 'Fredoka One', cursive;
+  font-size: 2rem;
+  color: white;
+  margin: 0;
+  letter-spacing: 0.02em;
+}
+
+.headerSubtitle {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 4px 0 0 0;
+}
+
+.logoutBtn {
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 25px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.logoutBtn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+/* Tabs */
+.tabContainer {
+  background: white;
+  padding: 0 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 120px;
+  z-index: 15;
+}
+
+.tabBtn {
+  background: none;
+  border: none;
+  padding: 16px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--gray);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-bottom: 3px solid transparent;
+}
+
+.tabBtn:hover {
+  color: var(--red);
+  background: rgba(232, 36, 60, 0.05);
+}
+
+.tabBtn.active {
+  color: var(--red);
+  border-bottom-color: var(--red);
+}
+
+/* Content */
+.contentArea {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 30px 20px;
+  position: relative;
+  z-index: 10;
+}
+
+/* List Section */
+.listSection {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.messageEditor {
+  background: white;
+  padding: 24px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.messageEditor h3 {
+  margin: 0 0 16px 0;
+  color: var(--red);
+  font-family: 'Fredoka One', cursive;
+  font-size: 1.3rem;
+}
+
+.messageTextarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  resize: vertical;
+  font-family: inherit;
+}
+
+.messageTextarea:focus {
+  outline: none;
+  border-color: var(--red);
+}
+
+.messageActions {
+  margin-top: 16px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.shareBtn, .bulkWhatsAppBtn {
+  background: linear-gradient(135deg, var(--blue) 0%, #4a90e2 100%);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 25px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.shareBtn:hover, .bulkWhatsAppBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+}
+
+/* Empty State */
+.emptyState {
+  text-align: center;
+  padding: 60px 20px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.emptyIcon {
+  font-size: 4rem;
+  margin-bottom: 16px;
+}
+
+.emptyText {
+  font-size: 1.2rem;
+  color: var(--gray);
+  margin-bottom: 24px;
+}
+
+.addFirstBtn {
+  background: linear-gradient(135deg, var(--red) 0%, var(--crimson) 100%);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 25px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.addFirstBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(232, 36, 60, 0.3);
+}
+
+/* Guests List */
+.guestsList {
+  display: grid;
+  gap: 16px;
+}
+
+.guestCard {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: all 0.3s ease;
+}
+
+.guestCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+}
+
+.guestSelect {
+  flex-shrink: 0;
+}
+
+.guestSelect input[type="checkbox"] {
+  display: none;
+}
+
+.guestSelect label {
+  display: block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #e0e0e0;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.guestSelect input:checked + label {
+  background: var(--red);
+  border-color: var(--red);
+}
+
+.guestSelect input:checked + label::after {
+  content: '✓';
+  color: white;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.guestInfo {
+  flex: 1;
+}
+
+.guestInfo h4 {
+  margin: 0 0 8px 0;
+  color: var(--red);
+  font-size: 1.1rem;
+}
+
+.guestInfo p {
+  margin: 4px 0;
+  color: var(--gray);
+}
+
+.date {
+  font-size: 0.85rem !important;
+  color: #999 !important;
+}
+
+.guestActions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.actionBtn {
+  background: none;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+}
+
+.actionBtn:hover {
+  background: rgba(232, 36, 60, 0.1);
+  transform: scale(1.1);
+}
+
+/* Add Section */
+.addSection {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.formCard {
+  background: white;
+  padding: 32px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.formCard h3 {
+  margin: 0 0 24px 0;
+  color: var(--red);
+  font-family: 'Fredoka One', cursive;
+  font-size: 1.4rem;
+  text-align: center;
+}
+
+.formGroup {
+  margin-bottom: 20px;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: var(--gray);
+}
+
+.formGroup input,
+.formGroup select {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.formGroup input:focus,
+.formGroup select:focus {
+  outline: none;
+  border-color: var(--red);
+}
+
+.formActions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.saveBtn, .cancelBtn {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: 25px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.saveBtn {
+  background: linear-gradient(135deg, var(--red) 0%, var(--crimson) 100%);
+  color: white;
+}
+
+.saveBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(232, 36, 60, 0.3);
+}
+
+.cancelBtn {
+  background: #f5f5f5;
+  color: var(--gray);
+}
+
+.cancelBtn:hover {
+  background: #e0e0e0;
+}
+
+/* Upload Section */
+.uploadSection {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.uploadCard {
+  background: white;
+  padding: 32px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.uploadCard h3 {
+  margin: 0 0 16px 0;
+  color: var(--red);
+  font-family: 'Fredoka One', cursive;
+  font-size: 1.4rem;
+  text-align: center;
+}
+
+.uploadDescription {
+  text-align: center;
+  color: var(--gray);
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
+.fileUpload {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.fileInput {
+  display: none;
+}
+
+.fileLabel {
+  background: linear-gradient(135deg, var(--blue) 0%, #4a90e2 100%);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 25px;
+  cursor: pointer;
+  display: inline-block;
+  transition: all 0.3s ease;
+  font-weight: 600;
+}
+
+.fileLabel:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+}
+
+.sampleFormat {
+  background: #f8f9fa;
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
+
+.sampleFormat h4 {
+  margin: 0 0 12px 0;
+  color: var(--gray);
+  font-size: 1rem;
+}
+
+.sampleFormat pre {
+  background: white;
+  padding: 12px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  color: #666;
+  overflow-x: auto;
+  margin: 0;
+}
+
+/* Modal */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: white;
+  padding: 24px;
+  border-radius: 16px;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal.success {
+  border-left: 4px solid #4caf50;
+}
+
+.modal.error {
+  border-left: 4px solid #f44336;
+}
+
+.modalClose {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #999;
+}
+
+.modalIcon {
+  font-size: 3rem;
+  margin-bottom: 16px;
+}
+
+.modalContent p {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--gray);
+}
+
+/* Loading Spinner */
+.loadingSpinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  color: var(--red);
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid var(--red);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .headerContent {
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
+  }
+
+  .headerTitle {
+    font-size: 1.6rem;
+  }
+
+  .tabContainer {
+    padding: 0 10px;
+  }
+
+  .tabBtn {
+    padding: 12px 16px;
+    font-size: 0.9rem;
+  }
+
+  .contentArea {
+    padding: 20px 10px;
+  }
+
+  .formCard, .uploadCard {
+    padding: 24px 20px;
+  }
+
+  .guestCard {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .guestActions {
+    align-self: flex-end;
+  }
+
+  .messageActions {
+    flex-direction: column;
+  }
+
+  .shareBtn, .bulkWhatsAppBtn {
+    width: 100%;
+  }
+
+  .formActions {
+    flex-direction: column;
+  }
+}

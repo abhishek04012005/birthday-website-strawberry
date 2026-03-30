@@ -3,6 +3,7 @@
   background: var(--cream);
   position: relative;
   overflow-x: hidden;
+  padding-top: 0;
 }
 
 .dashboardBg {

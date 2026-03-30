@@ -1,6 +1,6 @@
 .wishesPageContainer {
   min-height: 100vh;
-  padding-top: 100px;
+  padding-top: 0;
   position: relative;
   overflow: hidden;
 }
